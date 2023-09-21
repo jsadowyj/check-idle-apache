@@ -1,9 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"log"
+	"net/http"
+	"net/url"
 	"os"
+	"strconv"
+	"strings"
 
 	corev2 "github.com/sensu/sensu-go/api/core/v2"
 	"github.com/sensu/sensu-plugin-sdk/sensu"
@@ -12,8 +16,12 @@ import (
 // Config represents the check plugin config.
 type Config struct {
 	sensu.PluginConfig
-	Example string
+	URL string
+	Warning int
+	Critical int
 }
+
+const IDLE_NULL = -1
 
 var (
 	plugin = Config{
@@ -26,13 +34,31 @@ var (
 
 	options = []sensu.ConfigOption{
 		&sensu.PluginConfigOption[string]{
-			Path:      "example",
-			Env:       "CHECK_EXAMPLE",
-			Argument:  "example",
-			Shorthand: "e",
-			Default:   "",
-			Usage:     "An example string configuration option",
-			Value:     &plugin.Example,
+			Path:      "url",
+			Env:       "URL",
+			Argument:  "url",
+			Shorthand: "u",
+			Default:   "http://127.0.0.1/server-status?auto",
+			Usage:     "mod_status url",
+			Value:     &plugin.URL,
+		},
+		&sensu.PluginConfigOption[int]{
+			Path:      "warning",
+			Env:       "WARNING",
+			Argument:  "warning",
+			Shorthand: "w",
+			Default:   IDLE_NULL,
+			Usage:     "warning threshold",
+			Value:     &plugin.Warning,
+		},
+		&sensu.PluginConfigOption[int]{
+			Path:      "critical",
+			Env:       "CRITICAL",
+			Argument:  "critical",
+			Shorthand: "c",
+			Default:   0,
+			Usage:     "critical threshold",
+			Value:     &plugin.Critical,
 		},
 	}
 )
@@ -46,22 +72,66 @@ func main() {
 	}
 	//Check the Mode bitmask for Named Pipe to indicate stdin is connected
 	if fi.Mode()&os.ModeNamedPipe != 0 {
-		log.Println("using stdin")
+		fmt.Println("using stdin")
 		useStdin = true
 	}
 
-	check := sensu.NewGoCheck(&plugin.PluginConfig, options, checkArgs, executeCheck, useStdin)
+	check := sensu.NewCheck(&plugin.PluginConfig, options, checkArgs, executeCheck, useStdin)
 	check.Execute()
 }
 
 func checkArgs(event *corev2.Event) (int, error) {
-	if len(plugin.Example) == 0 {
-		return sensu.CheckStateWarning, fmt.Errorf("--example or CHECK_EXAMPLE environment variable is required")
+	// return unknown status if URL is unable to be parsed
+	if _, err := url.ParseRequestURI(plugin.URL); err != nil {
+		return sensu.CheckStateUnknown, fmt.Errorf("invalid url (input: %s)", plugin.URL)
 	}
 	return sensu.CheckStateOK, nil
 }
 
-func executeCheck(event *corev2.Event) (int, error) {
-	log.Println("executing check with --example", plugin.Example)
-	return sensu.CheckStateOK, nil
+func parseIdleWorkers(s string) (int, error) {
+	idleStr := strings.Split(s, " ")[1]
+	if i, err := strconv.Atoi(idleStr); err == nil {
+		return i, nil 
+	} 
+	return IDLE_NULL, fmt.Errorf("unable to parse idle worker count")
 }
+
+func parseApacheResponse(r *http.Response) (int, error) {
+	scanner := bufio.NewScanner(r.Body)
+	for scanner.Scan() {
+		line := strings.ToLower(scanner.Text())
+    if strings.Contains(line, "idleworkers:"){
+			idle, err := parseIdleWorkers(line)
+			return idle, err
+		}
+	}
+	return IDLE_NULL, fmt.Errorf("unable to parse http response")
+}
+
+func executeCheck(event *corev2.Event) (int, error) {
+	u, _ := url.ParseRequestURI(plugin.URL)
+	res, err := http.Get(u.String())
+	if err != nil {
+		return sensu.CheckStateUnknown, err
+	}
+	defer res.Body.Close()
+
+	idle, err := parseApacheResponse(res)
+
+	if err != nil {
+		return sensu.CheckStateUnknown, err
+	}
+	
+	switch {
+		case idle <= plugin.Critical:
+			fmt.Printf("CRITICAL - idle workers: %d\n", idle)
+			return sensu.CheckStateCritical, nil
+		case idle <= plugin.Warning:
+			fmt.Printf("WARNING - idle workers: %d\n", idle)
+			return sensu.CheckStateWarning, nil
+		default:
+			fmt.Printf("OK - idle workers: %d\n", idle)
+			return sensu.CheckStateOK, nil
+	}
+}
+
