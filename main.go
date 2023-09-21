@@ -97,10 +97,7 @@ func checkArgs(event *corev2.Event) (int, error) {
 
 func sendApacheRequest(u string) (*http.Response, error) {
 	resp, err := http.Get(u)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return resp, err
 }	
 
 func parseIdleWorkers(s string) (int, error) {
