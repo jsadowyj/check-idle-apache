@@ -44,7 +44,7 @@ the plugin with goreleaser. Register the asset with [Bonsai][8] to share it with
 
 ## Overview
 
-The sensu-plugins-idle-apache is a [Sensu Check][6] that ...
+The sensu-plugins-idle-apache is a [Sensu Check][6] that monitors idle apache worker count.
 
 ## Files
 
@@ -74,7 +74,7 @@ metadata:
   name: sensu-plugins-idle-apache
   namespace: default
 spec:
-  command: sensu-plugins-idle-apache --example example_arg
+  command: sensu-plugins-idle-apache --url http://127.0.0.1/server-status --critical 0 --warning 5
   subscriptions:
   - system
   runtime_assets:
