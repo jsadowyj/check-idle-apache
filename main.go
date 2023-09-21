@@ -125,12 +125,10 @@ func parseApacheResponse(r *http.Response) (int, error) {
 
 func executeCheck(event *corev2.Event) (int, error) {
 	res, err := sendApacheRequest(plugin.URL)
-	defer res.Body.Close()
-	
-
 	if err != nil {
 		return sensu.CheckStateUnknown, err
 	}
+	defer res.Body.Close()
 
 	idle, err := parseApacheResponse(res)
 
