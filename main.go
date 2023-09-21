@@ -39,7 +39,7 @@ var (
 			Argument:  "url",
 			Shorthand: "u",
 			Default:   "http://127.0.0.1/server-status?auto",
-			Usage:     "mod_status url",
+			Usage:     "mod_status url (?auto query parameter is required!!)",
 			Value:     &plugin.URL,
 		},
 		&sensu.PluginConfigOption[int]{
@@ -82,11 +82,26 @@ func main() {
 
 func checkArgs(event *corev2.Event) (int, error) {
 	// return unknown status if URL is unable to be parsed
-	if _, err := url.ParseRequestURI(plugin.URL); err != nil {
+	u, err := url.ParseRequestURI(plugin.URL)
+	// verifies the input URL is valid
+	if err != nil {
 		return sensu.CheckStateUnknown, fmt.Errorf("invalid url (input: %s)", plugin.URL)
+	}
+	// verifies the URL is machine readable
+	// https://httpd.apache.org/docs/2.4/mod/mod_status.html
+	if !u.Query().Has("auto") {
+		return sensu.CheckStateUnknown, fmt.Errorf("missing ?auto query parameter (example: http://127.0.0.1/server-status?auto)")
 	}
 	return sensu.CheckStateOK, nil
 }
+
+func sendApacheRequest(u string) (*http.Response, error) {
+	resp, err := http.Get(u)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}	
 
 func parseIdleWorkers(s string) (int, error) {
 	idleStr := strings.Split(s, " ")[1]
@@ -109,12 +124,13 @@ func parseApacheResponse(r *http.Response) (int, error) {
 }
 
 func executeCheck(event *corev2.Event) (int, error) {
-	u, _ := url.ParseRequestURI(plugin.URL)
-	res, err := http.Get(u.String())
+	res, err := sendApacheRequest(plugin.URL)
+	defer res.Body.Close()
+	
+
 	if err != nil {
 		return sensu.CheckStateUnknown, err
 	}
-	defer res.Body.Close()
 
 	idle, err := parseApacheResponse(res)
 
