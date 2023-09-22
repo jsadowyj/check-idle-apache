@@ -1,4 +1,4 @@
-module github.com/jsadowyj/sensu-plugins-idle-apache
+module github.com/jsadowyj/check-idle-apache
 
 go 1.18
 

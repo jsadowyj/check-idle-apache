@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-sensu-plugins-idle-apache
+check-idle-apache
 
 # Test binary, build with `go test -c`
 *.test

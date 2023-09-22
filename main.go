@@ -26,9 +26,9 @@ const IDLE_NULL = -1
 var (
 	plugin = Config{
 		PluginConfig: sensu.PluginConfig{
-			Name:     "sensu-plugins-idle-apache",
+			Name:     "check-idle-apache",
 			Short:    "Monitors idle workers on apache status page",
-			Keyspace: "sensu.io/plugins/sensu-plugins-idle-apache/config",
+			Keyspace: "sensu.io/plugins/check-idle-apache/config",
 		},
 	}
 
