@@ -1,4 +1,4 @@
-module github.com/jsadowyj/check-idle-apache
+module github.com/mnx-solutions/check-idle-apache
 
 go 1.18
 

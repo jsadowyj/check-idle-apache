@@ -1,6 +1,6 @@
-[![Sensu Bonsai Asset](https://img.shields.io/badge/Bonsai-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/jsadowyj/check-idle-apache)
-![Go Test](https://github.com/jsadowyj/check-idle-apache/workflows/Go%20Test/badge.svg)
-![goreleaser](https://github.com/jsadowyj/check-idle-apache/workflows/goreleaser/badge.svg)
+[![Sensu Bonsai Asset](https://img.shields.io/badge/Bonsai-Download%20Me-brightgreen.svg?colorB=89C967&logo=sensu)](https://bonsai.sensu.io/assets/mnx-solutions/check-idle-apache)
+![Go Test](https://github.com/mnx-solutions/check-idle-apache/workflows/Go%20Test/badge.svg)
+![goreleaser](https://github.com/mnx-solutions/check-idle-apache/workflows/goreleaser/badge.svg)
 
 # Check Plugin Template
 
@@ -59,10 +59,10 @@ consider doing so! If you're using sensuctl 5.13 with Sensu Backend 5.13 or late
 following command to add the asset:
 
 ```
-sensuctl asset add jsadowyj/check-idle-apache
+sensuctl asset add mnx-solutions/check-idle-apache
 ```
 
-If you're using an earlier version of sensuctl, you can find the asset on the [Bonsai Asset Index][https://bonsai.sensu.io/assets/jsadowyj/check-idle-apache].
+If you're using an earlier version of sensuctl, you can find the asset on the [Bonsai Asset Index][https://bonsai.sensu.io/assets/mnx-solutions/check-idle-apache].
 
 ### Check definition
 
@@ -78,7 +78,7 @@ spec:
   subscriptions:
   - system
   runtime_assets:
-  - jsadowyj/check-idle-apache
+  - mnx-solutions/check-idle-apache
 ```
 
 ## Installation from source
@@ -102,8 +102,8 @@ For more information about contributing to this plugin, see [Contributing][1].
 [1]: https://github.com/sensu/sensu-go/blob/master/CONTRIBUTING.md
 [2]: https://github.com/sensu/sensu-plugin-sdk
 [3]: https://github.com/sensu-plugins/community/blob/master/PLUGIN_STYLEGUIDE.md
-[4]: https://github.com/jsadowyj/check-idle-apache/blob/master/.github/workflows/release.yml
-[5]: https://github.com/jsadowyj/check-idle-apache/actions
+[4]: https://github.com/mnx-solutions/check-idle-apache/blob/master/.github/workflows/release.yml
+[5]: https://github.com/mnx-solutions/check-idle-apache/actions
 [6]: https://docs.sensu.io/sensu-go/latest/reference/checks/
 [7]: https://github.com/sensu/check-plugin-template/blob/master/main.go
 [8]: https://bonsai.sensu.io/

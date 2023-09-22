@@ -9,5 +9,11 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0] - 2023-09-22
 
+### Changed
+- ownership of repo from jsadowyj to mnx-solutions
+- .bonsai.yml builds
+
+## [0.1.0] - 2023-09-22
+
 ### Added
 - Initial release
