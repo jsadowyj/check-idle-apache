@@ -28,6 +28,8 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release --clean
+          checksum:
+            algorithm: sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
