@@ -7,7 +7,7 @@ Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
-## [0.1.0] - 2023-09-22
+## [0.1.1] - 2023-09-22
 
 ### Changed
 - ownership of repo from jsadowyj to mnx-solutions
