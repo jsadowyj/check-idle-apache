@@ -1,7 +1,5 @@
 # .github/workflows/release.yml
 name: goreleaser
-checksum:
-  algorithm: sha256
 
 on:
   push:
