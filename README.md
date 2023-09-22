@@ -74,7 +74,7 @@ metadata:
   name: check-idle-apache
   namespace: default
 spec:
-  command: check-idle-apache --url http://127.0.0.1/server-status --critical 0 --warning 5
+  command: check-idle-apache --url http://127.0.0.1/server-status?auto --critical 0 --warning 5
   subscriptions:
   - system
   runtime_assets:
